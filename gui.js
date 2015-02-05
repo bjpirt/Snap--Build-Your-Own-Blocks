@@ -428,7 +428,7 @@ IDE_Morph.prototype.createLogo = function () {
     }
 
     this.logo = new Morph();
-    this.logo.texture = 'snap_logo_sm.png';
+    this.logo.texture = '/assets/apps/snap/snap_logo_sm.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
         var context = this.image.getContext('2d'),
@@ -689,6 +689,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.settingsButton = settingsButton; // for menu positioning
 
     // cloudButton
+    /*
     button = new PushButtonMorph(
         this,
         'cloudMenu',
@@ -710,7 +711,7 @@ IDE_Morph.prototype.createControlBar = function () {
     cloudButton = button;
     this.controlBar.add(cloudButton);
     this.controlBar.cloudButton = cloudButton; // for menu positioning
-
+    */
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
         [stopButton, pauseButton, startButton].forEach(
@@ -739,11 +740,11 @@ IDE_Morph.prototype.createControlBar = function () {
         settingsButton.setCenter(myself.controlBar.center());
         settingsButton.setLeft(this.left());
 
-        cloudButton.setCenter(myself.controlBar.center());
-        cloudButton.setRight(settingsButton.left() - padding);
+        //cloudButton.setCenter(myself.controlBar.center());
+        //cloudButton.setRight(settingsButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(cloudButton.left() - padding);
+        projectButton.setRight(settingsButton.left() - padding);
 
         this.updateLabel();
     };
@@ -1910,7 +1911,7 @@ IDE_Morph.prototype.snapMenu = function () {
     menu.addItem(
         'Reference manual',
         function () {
-            window.open('help/SnapManual.pdf', 'SnapReferenceManual');
+            window.open('/assets/apps/snap/help/SnapManual.pdf', 'SnapReferenceManual');
         }
     );
     menu.addItem(
@@ -2228,6 +2229,7 @@ IDE_Morph.prototype.settingsMenu = function () {
         'check to rasterize\nSVGs on import',
         true
     );
+    /*
     addPreference(
         'Flat design',
         function () {
@@ -2241,6 +2243,7 @@ IDE_Morph.prototype.settingsMenu = function () {
         'check for alternative\nGUI design',
         false
     );
+    */
     addPreference(
         'Sprite Nesting',
         function () {
@@ -2374,7 +2377,7 @@ IDE_Morph.prototype.projectMenu = function () {
         function () {myself.exportGlobalBlocks(); },
         'show global custom block definitions as XML\nin a new browser window'
     );
-
+/*
     if (shiftClicked) {
         menu.addItem(
             'Export all scripts as pic...',
@@ -2429,15 +2432,17 @@ IDE_Morph.prototype.projectMenu = function () {
         },
         'Select categories of additional blocks to add to this project.'
     );
+    */
+    menu.addLine();
 
     menu.addItem(
         localize(graphicsName) + '...',
         function () {
-            var dir = graphicsName,
+            var dir = '/assets/apps/snap/' + graphicsName,
                 names = myself.getCostumesList(dir),
                 libMenu = new MenuMorph(
                     myself,
-                    localize('Import') + ' ' + localize(dir)
+                    localize('Import') + ' ' + localize(graphicsName)
                 );
 
             function loadCostume(name) {
@@ -2466,11 +2471,11 @@ IDE_Morph.prototype.projectMenu = function () {
     menu.addItem(
         localize('Sounds') + '...',
         function () {
-            var names = this.getCostumesList('Sounds'),
+            var names = this.getCostumesList('/assets/apps/snap/Sounds/'),
                 libMenu = new MenuMorph(this, 'Import sound');
 
             function loadSound(name) {
-                var url = 'Sounds/' + name,
+                var url = '/assets/apps/snap/Sounds/' + name,
                     audio = new Audio();
                 audio.src = url;
                 audio.load();
@@ -2788,7 +2793,7 @@ IDE_Morph.prototype.rawSaveProject = function (name) {
             try {
                 localStorage['-snap-project-' + name]
                     = str = this.serializer.serialize(this.stage);
-                location.hash = '#open:' + str;
+                //location.hash = '#open:' + str;
                 this.showMessage('Saved!', 1);
             } catch (err) {
                 this.showMessage('Save failed: ' + err);
@@ -2796,7 +2801,7 @@ IDE_Morph.prototype.rawSaveProject = function (name) {
         } else {
             localStorage['-snap-project-' + name]
                 = str = this.serializer.serialize(this.stage);
-            location.hash = '#open:' + str;
+            //location.hash = '#open:' + str;
             this.showMessage('Saved!', 1);
         }
     }
@@ -2837,7 +2842,7 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
                 str = encodeURIComponent(
                     this.serializer.serialize(this.stage)
                 );
-                location.hash = '#open:' + str;
+                //location.hash = '#open:' + str;
                 window.open('data:text/'
                     + (plain ? 'plain,' + str : 'xml,' + str));
                 menu.destroy();
@@ -2850,7 +2855,7 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
             str = encodeURIComponent(
                 this.serializer.serialize(this.stage)
             );
-            location.hash = '#open:' + str;
+            //location.hash = '#open:' + str;
             window.open('data:text/'
                 + (plain ? 'plain,' + str : 'xml,' + str));
             menu.destroy();
@@ -3124,7 +3129,7 @@ IDE_Morph.prototype.openProject = function (name) {
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);
-        location.hash = '#open:' + str;
+        //location.hash = '#open:' + str;
     }
 };
 

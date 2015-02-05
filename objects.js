@@ -1186,6 +1186,85 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'reporter',
             category: 'other',
             spec: 'code of %cmdRing'
+        },
+
+        //Mirobot functions - shame this is wrapped in a function call :-(
+        mirobotForward: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Move forward by %n mm',
+          defaults: [100]
+        },
+        mirobotBack: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Move back by %n mm',
+          defaults: [100]
+        },
+        mirobotLeft: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Turn %counterclockwise by %n degrees',
+          defaults: [90]
+        },
+        mirobotRight: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Turn %clockwise by %n degrees',
+          defaults: [90]
+        },
+        mirobotPenup: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Pen up'
+        },
+        mirobotPendown: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Pen down'
+        },
+        mirobotBeep: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Beep for %n seconds',
+          defaults: [0.5]
+        },
+        mirobotStop: {
+          only: Process,
+          type: 'command',
+          category: 'mirobot',
+          spec: 'Stop'
+        },
+        mirobotBumpSensor: {
+          only: Process,
+          type: 'reporter',
+          category: 'mirobot',
+          spec: 'Bump sensor'
+        },
+        mirobotLineSensor: {
+          only: Process,
+          type: 'reporter',
+          category: 'mirobot',
+          spec: 'Line sensor'
+        },
+        mirobotBumpEvent: {
+          only: Process,
+          type: 'hat',
+          category: 'mirobot',
+          spec: 'when bump state changes'
+        },
+        mirobotLineEvent: {
+          only: Process,
+          type: 'hat',
+          category: 'mirobot',
+          spec: 'when line state changes'
         }
     };
 };
@@ -1837,8 +1916,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(watcherToggle('getLastMessage'));
         blocks.push(block('getLastMessage'));
         blocks.push('-');
+        /*
         blocks.push(block('doWarp'));
         blocks.push('-');
+        */
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
         blocks.push('-');
@@ -1849,8 +1930,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doIf'));
         blocks.push(block('doIfElse'));
         blocks.push('-');
+        /*
         blocks.push(block('doReport'));
         blocks.push('-');
+        */
     /*
     // old STOP variants, migrated to a newer version, now redundant
         blocks.push(block('doStopBlock'));
@@ -1859,11 +1942,13 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     */
         blocks.push(block('doStopThis'));
         blocks.push(block('doStopOthers'));
+        /*
         blocks.push('-');
         blocks.push(block('doRun'));
         blocks.push(block('fork'));
         blocks.push(block('evaluate'));
         blocks.push('-');
+        */
     /*
     // list variants commented out for now (redundant)
         blocks.push(block('doRunWithInputList'));
@@ -1871,8 +1956,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('evaluateWithInputList'));
         blocks.push('-');
     */
+        /*
         blocks.push(block('doCallCC'));
         blocks.push(block('reportCallCC'));
+        */
         blocks.push('-');
         blocks.push(block('receiveOnClone'));
         blocks.push(block('createClone'));
@@ -1964,14 +2051,18 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('reportTextSplit'));
         blocks.push(block('reportLetter'));
         blocks.push(block('reportStringSize'));
+        /*
         blocks.push('-');
         blocks.push(block('reportUnicode'));
         blocks.push(block('reportUnicodeAsLetter'));
+        */
         blocks.push('-');
         blocks.push(block('reportIsA'));
         blocks.push(block('reportIsIdentical'));
+        /*
         blocks.push('-');
         blocks.push(block('reportJSFunction'));
+        */
 
     // for debugging: ///////////////
 
@@ -2049,7 +2140,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
-        blocks.push(block('doDeclareVariables'));
+        //blocks.push(block('doDeclareVariables'));
 
         blocks.push('=');
 
@@ -2128,6 +2219,26 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.selector = 'addCustomBlock';
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
+    }else if (cat === 'mirobot') {
+
+        blocks.push(block('mirobotForward'));
+        blocks.push(block('mirobotBack'));
+        blocks.push(block('mirobotLeft'));
+        blocks.push(block('mirobotRight'));
+        blocks.push(block('mirobotStop'));
+        blocks.push('-');
+        blocks.push(block('mirobotPenup'));
+        blocks.push(block('mirobotPendown'));
+        blocks.push('-');
+        blocks.push(block('mirobotBeep'));
+        blocks.push('-');
+        blocks.push(block('mirobotBumpSensor'));
+        blocks.push('-');
+        blocks.push(block('mirobotLineSensor'));
+        blocks.push('-');
+        blocks.push(block('mirobotBumpEvent'));
+        blocks.push(block('mirobotLineEvent'));
+
     }
     return blocks;
 };
@@ -3503,10 +3614,18 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             if (morph.selector === 'receiveClick') {
                 return message === '__click__';
             }
+            if (morph.selector === 'mirobotBumpEvent') {
+                return message === '__mirobot_bump__';
+            }
+            if (morph.selector === 'mirobotLineEvent') {
+                return message === '__mirobot_line__';
+            }
         }
         return false;
     });
 };
+
+
 
 SpriteMorph.prototype.allHatBlocksForKey = function (key) {
     return this.scripts.children.filter(function (morph) {
@@ -4830,6 +4949,7 @@ StageMorph.prototype.fireGreenFlagEvent = function () {
     if (ide) {
         ide.controlBar.pauseButton.refresh();
     }
+    this.setupMirobotEvents();
     return procs;
 };
 
@@ -4851,6 +4971,7 @@ StageMorph.prototype.fireStopAllEvent = function () {
             function () {ide.controlBar.pauseButton.refresh(); }
         ]);
     }
+    this.stopMirobotEvents();
 };
 
 StageMorph.prototype.removeAllClones = function () {
@@ -5028,8 +5149,10 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(watcherToggle('getLastMessage'));
         blocks.push(block('getLastMessage'));
         blocks.push('-');
+        /*
         blocks.push(block('doWarp'));
         blocks.push('-');
+        */
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
         blocks.push('-');
@@ -5040,8 +5163,10 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doIf'));
         blocks.push(block('doIfElse'));
         blocks.push('-');
+        /*
         blocks.push(block('doReport'));
         blocks.push('-');
+        */
     /*
     // old STOP variants, migrated to a newer version, now redundant
         blocks.push(block('doStopBlock'));
@@ -5051,10 +5176,12 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doStopThis'));
         blocks.push(block('doStopOthers'));
         blocks.push('-');
+        /*
         blocks.push(block('doRun'));
         blocks.push(block('fork'));
         blocks.push(block('evaluate'));
         blocks.push('-');
+        */
     /*
     // list variants commented out for now (redundant)
         blocks.push(block('doRunWithInputList'));
@@ -5062,9 +5189,11 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('evaluateWithInputList'));
         blocks.push('-');
     */
+        /*
         blocks.push(block('doCallCC'));
         blocks.push(block('reportCallCC'));
         blocks.push('-');
+        */
         blocks.push(block('createClone'));
         blocks.push('-');
         blocks.push(block('doPauseAll'));
@@ -5149,14 +5278,18 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('reportTextSplit'));
         blocks.push(block('reportLetter'));
         blocks.push(block('reportStringSize'));
+        /*
         blocks.push('-');
         blocks.push(block('reportUnicode'));
         blocks.push(block('reportUnicodeAsLetter'));
+        */
         blocks.push('-');
         blocks.push(block('reportIsA'));
         blocks.push(block('reportIsIdentical'));
+        /*
         blocks.push('-');
         blocks.push(block('reportJSFunction'));
+        */
 
     // for debugging: ///////////////
 
@@ -5303,6 +5436,25 @@ StageMorph.prototype.blockTemplates = function (category) {
             'Make a block'
         );
         blocks.push(button);
+    }else if(cat === 'mirobot'){
+
+        blocks.push(block('mirobotForward'));
+        blocks.push(block('mirobotBack'));
+        blocks.push(block('mirobotLeft'));
+        blocks.push(block('mirobotRight'));
+        blocks.push(block('mirobotStop'));
+        blocks.push('-');
+        blocks.push(block('mirobotPenup'));
+        blocks.push(block('mirobotPendown'));
+        blocks.push('-');
+        blocks.push(block('mirobotBeep'));
+        blocks.push('-');
+        blocks.push(block('mirobotBumpSensor'));
+        blocks.push('-');
+        blocks.push(block('mirobotLineSensor'));
+        blocks.push('-');
+        blocks.push(block('mirobotBumpEvent'));
+        blocks.push(block('mirobotLineEvent'));
     }
     return blocks;
 };
